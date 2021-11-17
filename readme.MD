@@ -1,4 +1,5 @@
-#HOW TO USE
+#**HOW TO USE**
+
 ##构建本地镜像
 ```
 git clone https://github.com/wwwhaoxu/httpserver.git
@@ -17,12 +18,13 @@ $ HTTP/1.1 200 OK
 name: haoxu
 Accept: */*
 User-Agent: curl/7.64.1
-Date: Mon, 27 Sep 2021 01:06:31 GMT
+Date: Mon, 27 Sep 2021 01:06:31 GMT:wq
 Content-Length: 0
 ```
 ```
 获取pid
-$ docker inspect --format "{{.State.Pid}}" 8ed89f5cb41ee5067becb341c497a7d00543ed3c06a8546e888a8cd8d2b0d6b718393
+$ docker inspect --format "{{.State.Pid}}" 
+8ed89f5cb41ee5067becb341c497a7d00543ed3c06a8546e888a8cd8d2b0d6b718393
 ```
 ```
 通过 nsenter 进入容器查看 IP 配置
