@@ -1,11 +1,11 @@
-#**HOW TO USE**
+# **HOW TO USE**
 
-##构建本地镜像
+## 构建本地镜像
 ```
 git clone https://github.com/wwwhaoxu/httpserver.git
 make release
 ```
-##通过 Docker 命令本地启动 httpserver.
+## 通过 Docker 命令本地启动 httpserver.
 ```
 $ docker run -it --rm -p8000:8000 -d docker.io/cncamp/httpserver:v1.0
 $ 8ed89f5cb41ee5067becb341c497a7d00543ed3c06a8546e888a8cd8d2b0d6b7
