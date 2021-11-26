@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  config.yaml: "# 端口号\r\nport: \"10000\"\r\n# 日志级别\r\nvlog: 3\r\n# custom\r\nname: \"bbb\""
+kind: ConfigMap
+metadata:
+  name: httpServer
+  namespace: default
