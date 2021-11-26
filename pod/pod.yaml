@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpServer
+spec:
+  metadata:
+    labels:
+      app: httpServer
+  containers:
+    - name: httpServer
+      image: registry.cn-beijing.aliyuncs.com/doc01/httpserver:v1
+      ports:
+        - name: port
+          containerPort: 8080
+      lifecycle:
+        postStart:
+          exec:
+            command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+        preStop:
+          exec:
+            command: [ "/bin/sh","-c","echo graceful stop" ]
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2Gi
+        limits:
+          cpu: 1
+          memory: 4Gi
+
+      volumeMounts:
+        - mountPath: /app/config
+          name: cfg
+
+      startupProbe:
+        httpGet:
+          path: /healthz
+          port: port
+        failureThreshold: 30
+        periodSeconds: 10
+
+      livenessProbe:
+        exec:
+          command:
+            - cat
+            - /tmp/healthy
+        initialDelaySeconds: 10
+        periodSeconds: 5
+
+      readinessProbe:
+        httpGet:
+          ### this probe will fail with 404 error code
+          ### only httpcode between 200-400 is retreated as success
+          path: /healthz
+          port: port
+        initialDelaySeconds: 30
+        periodSeconds: 5
+        successThreshold: 2
+  terminationGracePeriodSeconds: 30
+  volumes:
+    - configMap:
+        defaultMode: 420
+        name: httpServer
+      name: cfg

@@ -1,0 +1,6 @@
+# 端口号
+port: "10000"
+# 日志级别
+vlog: 3
+# custom
+name: "bbb"

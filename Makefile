@@ -7,8 +7,8 @@ build:  $(shell find . -name '*.go')
 
 release:
 	echo "building httpserver container"
-	docker build -t cncamp/httpserver:${tag} .
+	docker build -t registry.cn-beijing.aliyuncs.com/doc01/httpserver:${tag} .
 
 push: release
 	echo "pushing cncamp/httpserver"
-	docker push cncamp/httpserver:v1.0
+	docker push registry.cn-beijing.aliyuncs.com/doc01/httpserver:${tag} .

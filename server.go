@@ -124,7 +124,7 @@ func New(addr string, handler http.Handler) *App {
 }
 
 func (a *App) Run() error {
-
+	klog.Infof("httpserver listen: 8000")
 	g, ctx := errgroup.WithContext(a.ctx)
 	for {
 		g.Go(func() error {

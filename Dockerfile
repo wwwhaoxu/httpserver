@@ -6,7 +6,7 @@ FROM golang:1.16-buster AS build
 WORKDIR /app
 COPY go.mod ./
 COPY go.sum ./
-COPY httpserver ./httpserver
+COPY pkg/httpserver ./httpserver
 
 RUN ls; \
     go env -w GOPROXY="https://goproxy.cn,direct"; \
@@ -19,7 +19,7 @@ RUN ls; \
 FROM scratch
 WORKDIR /
 
-COPY --from=build /httpserver /httpserver
+COPY --from=build /pkg/httpserver /httpserver
 
 EXPOSE 8000
 
