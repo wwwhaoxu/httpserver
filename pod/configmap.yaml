@@ -1,0 +1,21 @@
+apiVersion: v1
+data:
+  config.yaml: "# 端口号\r\nport: \"10000\"\r\n# 日志级别\r\nvlog: 3\r\n# custom\r\nname: \"bbb\""
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2021-11-26T10:11:11Z"
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:cfg.yaml: {}
+    manager: kubectl
+    operation: Update
+    time: "2021-11-26T10:11:11Z"
+  name: httpserver
+  namespace: default
+  resourceVersion: "852449560"
+  selfLink: /api/v1/namespaces/default/configmaps/httpserver
+  uid: 516acd65-c071-45fb-aded-60079e1fbf17
