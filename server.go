@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"golang.org/x/sync/errgroup"
+	"httpserver/pkg/metrics"
 	"k8s.io/klog/v2"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
@@ -16,7 +18,7 @@ import (
 
 type responseObserver struct {
 	http.ResponseWriter
-	status int
+	status      int
 	written     int64
 	wroteHeader bool
 }
@@ -38,7 +40,6 @@ func (o *responseObserver) WriteHeader(code int) {
 	o.wroteHeader = true
 	o.status = code
 }
-
 
 // Logs incoming requests.
 func Log(h http.Handler) http.Handler {
@@ -124,7 +125,6 @@ func New(addr string, handler http.Handler) *App {
 }
 
 func (a *App) Run() error {
-	klog.Infof("httpserver listen: 8000")
 	g, ctx := errgroup.WithContext(a.ctx)
 	for {
 		g.Go(func() error {
@@ -156,7 +156,18 @@ func (a *App) stop() error {
 	return nil
 }
 
+func randInt(min int, max int) int {
+	rand.Seed(time.Now().UTC().UnixNano())
+	return min + rand.Intn(max-min)
+}
+
 func rootHandler(w http.ResponseWriter, r *http.Request) {
+	klog.V(4).Info("entering root handler")
+	timer := metrics.NewTimer()
+	defer timer.ObserveTotal()
+
+	delay := randInt(10, 2000)
+	time.Sleep(time.Millisecond * time.Duration(delay))
 
 	if r.URL.Path != "/" {
 		w.WriteHeader(404)
@@ -170,5 +181,6 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	if env, b := os.LookupEnv("VERSION"); b {
 		w.Header().Set("VERSION", env)
 	}
+	klog.V(4).Infof("Respond in %d ms", delay)
 
 }
