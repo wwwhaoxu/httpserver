@@ -12,3 +12,6 @@ release:
 push: release
 	echo "pushing cncamp/httpserver"
 	docker push registry.cn-beijing.aliyuncs.com/doc01/httpserver:${tag} .
+
+deploy:
+    kubectl apply -f spec/

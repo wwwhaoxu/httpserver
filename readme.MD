@@ -46,4 +46,8 @@ kubectl apply -f service.yaml
 kubectl apply -f ingress.yaml
 ```
 
+## 查看Prometheus的指标
+
+![img.png](img.png)
+
 
