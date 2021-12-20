@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"errors"
+	"github.com/golang/glog"
 	"golang.org/x/sync/errgroup"
 	"httpserver/pkg/metrics"
+	"io"
 	"k8s.io/klog/v2"
 	"math/rand"
 	"net"
@@ -42,6 +44,7 @@ func (o *responseObserver) WriteHeader(code int) {
 }
 
 // Logs incoming requests.
+
 func Log(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		o := &responseObserver{ResponseWriter: w}
@@ -98,8 +101,8 @@ func serve(addr string, handler http.Handler) error {
 	s := http.Server{
 		Addr:         addr,
 		Handler:      handler,
-		ReadTimeout:  time.Second,
-		WriteTimeout: time.Second,
+		ReadTimeout:  60 * time.Second,
+		WriteTimeout: 60 * time.Second,
 	}
 
 	return s.ListenAndServe()
@@ -166,21 +169,51 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	timer := metrics.NewTimer()
 	defer timer.ObserveTotal()
 
-	delay := randInt(10, 2000)
+	delay := randInt(10, 200)
 	time.Sleep(time.Millisecond * time.Duration(delay))
 
-	if r.URL.Path != "/" {
-		w.WriteHeader(404)
-		return
+	io.WriteString(w, "=========start send requests======")
+	service, _ := os.LookupEnv("SERVICE")
+	req, err := http.NewRequest("GET", "http://"+service, nil)
+	if err != nil {
+		klog.Warningf("request failed %s", service)
 	}
-	for k, v := range r.Header {
-		for _, s := range v {
-			w.Header().Add(k, s)
-		}
+
+	lowerCaseHeader := make(http.Header)
+	for key, value := range r.Header {
+		lowerCaseHeader[strings.ToLower(key)] = value
 	}
-	if env, b := os.LookupEnv("VERSION"); b {
-		w.Header().Set("VERSION", env)
+	klog.V(4).Info("headers:", lowerCaseHeader)
+
+	req.Header = lowerCaseHeader
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		glog.Info("HTTP get failed with error: ", "error", err)
+	} else {
+		glog.Info("HTTP get succeeded")
 	}
+	if resp != nil {
+		resp.Write(w)
+	}
+	//if r.URL.Path != "/" {
+	//	w.WriteHeader(404)
+	//	return
+	//}
+	//for k, v := range r.Header {
+	//	for _, s := range v {
+	//		if k == "Name" {
+	//			w.Header().Add(k, s)
+	//			io.WriteString(w, fmt.Sprintf("%s=%s\n", k, s))
+	//			klog.V(4).Info(k, s)
+	//		}
+	//	}
+	//
+	//}
+	//if env, b := os.LookupEnv("VERSION"); b {
+	//	w.Header().Set("VERSION", env)
+	//}
 	klog.V(4).Infof("Respond in %d ms", delay)
 
 }
