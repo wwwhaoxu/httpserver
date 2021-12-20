@@ -101,8 +101,8 @@ func serve(addr string, handler http.Handler) error {
 	s := http.Server{
 		Addr:         addr,
 		Handler:      handler,
-		ReadTimeout:  60 * time.Second,
-		WriteTimeout: 60 * time.Second,
+		ReadTimeout:  10*time.Second,
+		WriteTimeout: 10*time.Second,
 	}
 
 	return s.ListenAndServe()
