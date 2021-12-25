@@ -101,8 +101,8 @@ func serve(addr string, handler http.Handler) error {
 	s := http.Server{
 		Addr:         addr,
 		Handler:      handler,
-		ReadTimeout:  10*time.Second,
-		WriteTimeout: 10*time.Second,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
 	return s.ListenAndServe()
@@ -174,7 +174,9 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 
 	io.WriteString(w, "=========start send requests======")
 	service, _ := os.LookupEnv("SERVICE")
+	klog.V(4).Info("http://" + service)
 	req, err := http.NewRequest("GET", "http://"+service, nil)
+
 	if err != nil {
 		klog.Warningf("request failed %s", service)
 	}

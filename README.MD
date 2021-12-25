@@ -50,4 +50,34 @@ kubectl apply -f ingress.yaml
 
 ![img.png](img.png)
 
+## 实现安全保证 和 七层路由
+```
+# Deploy httpserver
+kubectl create ns securesvc
+kubectl label ns securesvc istio-injection=enabled
+kubectl create -f httpserver.yaml -n securesvc
 
+# Create tls secret
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=henry Inc./CN=*.henry.io' -keyout henry.io.key -out henry.io.crt
+kubectl create -n istio-system secret tls henry-credential --key=henry.io.key --cert=henry.io.crt
+
+# Deploy virtualService and gateway
+kubectl apply -f istio-specs.yaml -n securesvc 
+
+# Check ingress ip
+kubectl get svc/istio-ingressgateway -n istio-system
+INGRESS_IP=10.107.158.58  #10.107.158.58为svc的CLUSTER-IP
+
+# Access the httpserver via ingress
+curl --resolve httpsserver.henry.io:443:$INGRESS_IP https://httpsserver.cncamp.io/healthz -v -k
+```
+
+
+## open tracing 的接入
+```
+具体实现见代码，改进通过引入环境变量来区分不同的服务
+
+# Check tracing dashboard
+  修改tracing service类型为NodePort
+![img_1.png](img_1.png)
+```
