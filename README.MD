@@ -79,5 +79,5 @@ curl --resolve httpsserver.henry.io:443:$INGRESS_IP https://httpsserver.cncamp.i
 
 # Check tracing dashboard
   修改tracing service类型为NodePort
-![img_1.png](img_1.png)
 ```
+![img_2.png](img_2.png)
